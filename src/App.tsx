@@ -6,6 +6,8 @@ import Header from './components/Layout/Header';
 import PatientRegistration from './components/PatientRegistration/PatientRegistration';
 import PatientsData from './components/Patients/PatientsData';
 import PatientForm from './components/Patients/PatientForm';
+import SelectPatient from './components/PatientRegistration/SelectPatient';
+import CreateRegistration from './components/PatientRegistration/CreateRegistration';
 import Notification from './components/Notification';
 import { User, Patient } from './types';
 import { patientService } from './services/patientService';
@@ -13,8 +15,9 @@ import { patientService } from './services/patientService';
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [activeMenu, setActiveMenu] = useState('pendaftaran-pasien');
-  const [currentView, setCurrentView] = useState<'dashboard' | 'pendaftaran-pasien' | 'pasien' | 'laporan' | 'new-patient'>('pendaftaran-pasien');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'pendaftaran-pasien' | 'pasien' | 'laporan' | 'new-patient' | 'select-patient' | 'create-registration'>('pendaftaran-pasien');
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [notification, setNotification] = useState<{
     type: 'success' | 'error';
     message: string;
@@ -46,6 +49,17 @@ function App() {
   const handleNavigateToNewPatient = () => {
     setCurrentView('new-patient');
     setActiveMenu('pasien');
+  };
+
+  const handleNavigateToSelectPatient = () => {
+    setCurrentView('select-patient');
+    setActiveMenu('pendaftaran-pasien');
+  };
+
+  const handleNavigateToCreateRegistration = (patient: Patient) => {
+    setSelectedPatient(patient);
+    setCurrentView('create-registration');
+    setActiveMenu('pendaftaran-pasien');
   };
 
   const handleNavigateToDashboard = () => {
@@ -81,7 +95,32 @@ function App() {
           <PatientRegistration 
             onNavigateToPatients={handleNavigateToPatients}
             onNavigateToNewPatient={handleNavigateToNewPatient}
+            onNavigateToSelectPatient={handleNavigateToSelectPatient}
           />
+        );
+      case 'select-patient':
+        return (
+          <SelectPatient
+            onNavigateToDashboard={handleNavigateToDashboard}
+            onNavigateToRegistration={() => setCurrentView('pendaftaran-pasien')}
+            onSelectPatient={handleNavigateToCreateRegistration}
+            onShowNotification={showNotification}
+          />
+        );
+      case 'create-registration':
+        return selectedPatient ? (
+          <CreateRegistration
+            patient={selectedPatient}
+            onNavigateToDashboard={handleNavigateToDashboard}
+            onNavigateToRegistration={() => setCurrentView('pendaftaran-pasien')}
+            onNavigateToSelectPatient={() => setCurrentView('select-patient')}
+            onShowNotification={showNotification}
+            onRegistrationComplete={() => setCurrentView('pendaftaran-pasien')}
+          />
+        ) : (
+          <div className="p-6">
+            <p className="text-red-600">Error: Pasien tidak ditemukan</p>
+          </div>
         );
       case 'pasien':
         return (
@@ -118,6 +157,7 @@ function App() {
           <PatientRegistration 
             onNavigateToPatients={handleNavigateToPatients}
             onNavigateToNewPatient={handleNavigateToNewPatient}
+            onNavigateToSelectPatient={handleNavigateToSelectPatient}
           />
         );
     }
