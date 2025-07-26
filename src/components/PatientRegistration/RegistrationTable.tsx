@@ -87,7 +87,7 @@ const RegistrationTable: React.FC<RegistrationTableProps> = ({
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">ID Pendaftaran</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ID PendaftaranNNNNNNNNNNNNNN</label>
             <div className="relative">
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <input
